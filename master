@@ -1,0 +1,130 @@
+## teakav's Case Solvability Tool ##
+## version 1.0 ##
+## last updated 04/08/2021 ##
+
+# import GUI package
+
+import PySimpleGUI as sg
+sg.theme('SystemDefault')
+
+# intro window
+
+layout = [[sg.Text("Welcome to teakav's Case Solvability Tool")],
+          [sg.Button("Continue")]]
+window = sg.Window("Solvability Tool", layout)
+
+# set an event loop
+
+while True:
+    event, values = window.read()
+    
+    if event == sg.WIN_CLOSED:
+        break
+
+# enter case type
+    
+    if event == "Continue":
+        window.close()
+        layout = [[sg.Text("Enter your case type:")],
+                  [sg.Button("Persons")],
+                  [sg.Button("Property")],
+                  [sg.Button("Missing Person/Runaway")],
+                  [sg.Button("Death Investigation")]]
+        window = sg.Window(" ", layout)
+        event, values = window.read()
+        
+        if event == "Persons":
+            popup = sg.popup_ok("Auto-assign based on case type.",
+                                title = "Results")
+            window.close()
+            break
+        
+        if event == "Missing Person/Runaway":
+            popup = sg.popup_ok("Auto-assign based on case type.",
+                                title = "Results")
+            window.close()
+            break
+        
+        if event == "Death Investigation":
+            popup = sg.popup_ok("Auto-assign based on case type.",
+                                title = "Results")
+            window.close()
+            break
+        
+# property is the only case type that requires solvability points to determine assignment
+# add solvability factors and assign key values
+        
+        if event == "Property":
+            window.close()
+            layout = [[sg.Text("Enter solvability factors:")],
+                      [sg.Checkbox("Reliable victim witness(es)?",
+                                   key = 'REL_VIC_WIT')],
+                      [sg.Checkbox("Suspect named?",
+                                   key = 'SUS_NAME')],
+                      [sg.Checkbox("Suspect described?",
+                                   key = 'SUS_DESC')],
+                      [sg.Checkbox("Suspect location?",
+                                   key = 'SUS_LOC')],
+                      [sg.Checkbox("Suspect vehicle description?",
+                                   key = 'SUS_VEH')],
+                      [sg.Checkbox("Victim or witness(es) can identify suspect?",
+                                   key = 'VIC_WIT_ID')],
+                      [sg.Checkbox("Useable physical evidence?",
+                                   key = 'PHYS_EVID')],
+                      [sg.Checkbox("Traceable property?",
+                                   key = 'TRACE_PROP')],
+                      [sg.Checkbox("Significant M.O.?",
+                                   key = 'MO')],
+                      [sg.Checkbox("I.D. theft packet completed?",
+                                   key = 'ID_THEFT')],
+                      [sg.Button("Continue")]]
+            window = sg.Window(" ", layout)
+            event, values = window.read()
+
+# assign solvability points to keys
+
+        if event == "Continue":
+            
+            solvpts = 0
+            if values['REL_VIC_WIT'] == True:
+                solvpts = (solvpts + 3)
+            if values['SUS_NAME'] == True:
+                solvpts = (solvpts + 5)
+            if values['SUS_DESC'] == True:
+                solvpts = (solvpts + 2)
+            if values['SUS_LOC'] == True:
+                solvpts = (solvpts + 2)
+            if values['SUS_VEH'] == True:
+                solvpts = (solvpts + 2)
+            if values['VIC_WIT_ID'] == True:
+                solvpts = (solvpts + 2)
+            if values['PHYS_EVID'] == True:
+                solvpts = (solvpts + 2)
+            if values['TRACE_PROP'] == True:
+                solvpts = (solvpts + 1)
+            if values ['MO'] == True:
+                solvpts = (solvpts + 1)
+            if values ['ID_THEFT'] == True:
+                solvpts = (solvpts + 1)
+
+# get results
+
+            if solvpts > 6:
+                popup = sg.popup_ok("Solvability Score:",
+                                    solvpts,
+                                    "This case will likely be assigned for review.",
+                                    title = "Results")
+                window.close()
+                break
+
+            if solvpts < 6:
+                popup = sg.popup_ok("Solvability Score:",
+                                    solvpts,
+                                    "This case will likely be deactivated before assignment.",
+                                    title = "Results")
+                window.close()
+                break
+
+window.close()
+
+## use pyinstaller to create Windows .exe file
