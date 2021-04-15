@@ -1,6 +1,6 @@
 ## teakav's Case Solvability Tool ##
-## version 1.0 ##
-## last updated 04/08/2021 ##
+## version 0.1.1 ##
+## last updated 04/14/2021 ##
 
 # import GUI package
 
@@ -26,20 +26,20 @@ while True:
     if event == "Continue":
         window.close()
         layout = [[sg.Text("Enter your case type:")],
-                  [sg.Button("Persons")],
-                  [sg.Button("Property")],
-                  [sg.Button("Missing Person/Runaway")],
-                  [sg.Button("Death Investigation")]]
+                  [sg.Button("Persons Crime")],
+                  [sg.Button("Missing / Runaway")],
+                  [sg.Button("Death Investigation")],
+                  [sg.Button("Property")]]
         window = sg.Window(" ", layout)
         event, values = window.read()
 
-        if event == "Persons":
+        if event == "Persons Crime":
             popup = sg.popup_ok("Auto-assign based on case type.",
                                 title="Results")
             window.close()
             break
 
-        if event == "Missing Person/Runaway":
+        if event == "Missing / Runaway":
             popup = sg.popup_ok("Auto-assign based on case type.",
                                 title="Results")
             window.close()
@@ -54,29 +54,47 @@ while True:
 # property is the only case type that requires solvability points to determine assignment
 # add solvability factors and assign key values
 
-        if event == "Property":
+        if event == 'Property':
             window.close()
-            layout = [[sg.Text("Enter solvability factors:")],
-                      [sg.Checkbox("Reliable victim witness(es)?",
-                                   key='REL_VIC_WIT')],
-                      [sg.Checkbox("Suspect named?",
-                                   key='SUS_NAME')],
-                      [sg.Checkbox("Suspect described?",
-                                   key='SUS_DESC')],
-                      [sg.Checkbox("Suspect location?",
-                                   key='SUS_LOC')],
-                      [sg.Checkbox("Suspect vehicle description?",
-                                   key='SUS_VEH')],
-                      [sg.Checkbox("Victim or witness(es) can identify suspect?",
-                                   key='VIC_WIT_ID')],
-                      [sg.Checkbox("Useable physical evidence?",
-                                   key='PHYS_EVID')],
-                      [sg.Checkbox("Traceable property?",
-                                   key='TRACE_PROP')],
-                      [sg.Checkbox("Significant M.O.?",
-                                   key='MO')],
-                      [sg.Checkbox("I.D. theft packet completed?",
-                                   key='ID_THEFT')],
+            layout = [[sg.Text('Enter solvability factors:',
+                               font='bold')],
+                      [sg.Text('Credibility of victim / witness:'), sg.Slider(range=(1, 5),
+                                                                              orientation='horizontal',
+                                                                              key='vicwit_cred')],
+                      [sg.Text('Estimated time lapse of crime discovery:'),
+                       sg.Combo(['Less than 1 hour', '1 - 12 hours', '12 - 24 hours', 'More than 24 hours'],
+                                key='time_lapse')],
+                      [sg.Text('Video availability:'),
+                       sg.Combo(['None', 'Available', 'Recovered'],
+                                key='video')],
+                      [sg.Checkbox("Crime discovered by on-view officer?",
+                                   key='crime_ofc')],
+                      [sg.Checkbox('Suspect can be identified?',
+                                   key='sus_id')],
+                      [sg.Checkbox('Suspect can be described?',
+                                   key='sus_desc')],
+                      [sg.Checkbox('Suspect can be located?',
+                                   key='sus_loc')],
+                      [sg.Checkbox('Suspect has been seen in the area?',
+                                   key='sus_area')],
+                      [sg.Checkbox('Suspect vehicle can be identified?',
+                                   key='sus_veh')],
+                      [sg.Checkbox('Suspect vehicle can be partially described?',
+                                   key='sus_vehpart')],
+                      [sg.Checkbox('Traceable stolen property?',
+                                   key='trace_prop')],
+                      [sg.Checkbox('Recovered stolen property?',
+                                   key='recov_prop')],
+                      [sg.Checkbox('Significant method of operation?',
+                                   key='mo')],
+                      [sg.Checkbox('Recovered physical evidence?',
+                                   key='phys_ed')],
+                      [sg.Checkbox('Recovered latent prints?',
+                                   key='lat_prints')],
+                      [sg.Checkbox('Limited opportunity crime?',
+                                   key='opp_crime')],
+                      [sg.Checkbox('Other considerations / community impact?',
+                                   key='other')],
                       [sg.Button("Continue")]]
             window = sg.Window(" ", layout)
             event, values = window.read()
@@ -86,30 +104,62 @@ while True:
         if event == "Continue":
 
             solvpts = 0
-            if values['REL_VIC_WIT'] == True:
+            if values['vicwit_cred'] == 1:
+                solvpts = (solvpts + 1)
+            if values['vicwit_cred'] == 2:
+                solvpts = (solvpts + 2)
+            if values['vicwit_cred'] == 3:
                 solvpts = (solvpts + 3)
-            if values['SUS_NAME'] == True:
+            if values['vicwit_cred'] == 4:
+                solvpts = (solvpts + 4)
+            if values['vicwit_cred'] == 5:
                 solvpts = (solvpts + 5)
-            if values['SUS_DESC'] == True:
+            if values['time_lapse'] == 'Less than 1 hour':
+                solvpts = (solvpts + 3)
+            if values['time_lapse'] == '1 - 12 hours':
                 solvpts = (solvpts + 2)
-            if values['SUS_LOC'] == True:
-                solvpts = (solvpts + 2)
-            if values['SUS_VEH'] == True:
-                solvpts = (solvpts + 2)
-            if values['VIC_WIT_ID'] == True:
-                solvpts = (solvpts + 2)
-            if values['PHYS_EVID'] == True:
-                solvpts = (solvpts + 2)
-            if values['TRACE_PROP'] == True:
+            if values['time_lapse'] == '12 - 24 hours':
                 solvpts = (solvpts + 1)
-            if values['MO'] == True:
-                solvpts = (solvpts + 1)
-            if values['ID_THEFT'] == True:
-                solvpts = (solvpts + 1)
+            if values['time_lapse'] == 'More than 24 hours':
+                solvpts = (solvpts + 0)
+            if values['video'] == 'None':
+                solvpts = (solvpts + 0)
+            if values['video'] == 'Available':
+                solvpts = (solvpts + 2)
+            if values['video'] == 'Recovered':
+                solvpts = (solvpts + 4)
+            if values['crime_ofc'] == True:
+                solvpts = (solvpts + 5)
+            if values['sus_id'] == True:
+                solvpts = (solvpts + 10)
+            if values['sus_desc'] == True:
+                solvpts = (solvpts + 4)
+            if values['sus_loc'] == True:
+                solvpts = (solvpts + 4)
+            if values['sus_area'] == True:
+                solvpts = (solvpts + 2)
+            if values['sus_veh'] == True:
+                solvpts = (solvpts + 7)
+            if values['sus_vehpart'] == True:
+                solvpts = (solvpts + 2)
+            if values['trace_prop'] == True:
+                solvpts = (solvpts + 5)
+            if values['recov_prop'] == True:
+                solvpts = (solvpts + 7)
+            if values['mo'] == True:
+                solvpts = (solvpts + 3)
+            if values['phys_ed'] == True:
+                solvpts = (solvpts + 3)
+            if values['lat_prints'] == True:
+                solvpts = (solvpts + 5)
+            if values['opp_crime'] == True:
+                solvpts = (solvpts + 4)
+            if values['other'] == True:
+                solvpts = (solvpts + 3)
 
 # get results
 
-            if solvpts > 6:
+            if solvpts > 12:
                 popup = sg.popup_ok("Solvability Score:",
                                     solvpts,
                                     "This case will likely be assigned for review.",
@@ -117,7 +167,7 @@ while True:
                 window.close()
                 break
 
-            if solvpts < 6:
+            if solvpts < 12:
                 popup = sg.popup_ok("Solvability Score:",
                                     solvpts,
                                     "This case will likely be deactivated before assignment.",
